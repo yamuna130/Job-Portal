@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f0f4f8;
+      color: #333;
+      padding: 20px;
+    }
+    #certificate {
+      width: 900px;
+      padding: 50px;
+      border: 10px solid #004080;
+      background: white;
+      text-align: center;
+      margin: 20px auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      background-color: aquamarine;
+    }
+    h1 {
+      font-size: 3em;
+      color: #004080;
+    }
+    h2 {
+      font-size: 2em;
+      color: #0066cc;
+    }
+    h3 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    .badge {
+      margin-top: 30px;
+    }
+    .badge img {
+      width: 100px;
+    }
+    .btn, .input-wrapper {
+      text-align: center;
+      margin-top: 30px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #004080;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="input-wrapper">
+  <input type="text" id="nameInput" placeholder="Enter your name">
+  <button onclick="handleCertificate()">Generate Certificate</button>
+</div>
+
+<div id="certificate" style="display:none;">
+  <h1>Certificate of Completion</h1>
+  <p>This certifies that</p>
+  <h2 id="username">John Doe</h2>
+  <p>has successfully completed the</p>
+  <h3 id="module">[Course Name]</h3>
+  <p>Issued on <span id="date"></span></p>
+  <div class="badge">
+    <img src="https://png.pngtree.com/png-clipart/20190611/original/pngtree-vector-certified-professional-badge-png-image_2069356.jpg" alt="Badge" />
+    <p id="badgeTitle">[Badge Name]</p>
+  </div>
+</div>
+
+<div class="btn" id="downloadBtn" style="display:none;">
+  <button onclick="generatePDF()">Download Certificate</button>
+</div>
+
+<script>
+  function getQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      name: params.get("name") || "",
+      course: params.get("course") || ""
+    };
+  }
+
+  function handleCertificate() {
+    const name = document.getElementById("nameInput").value.trim();
+    const { course } = getQueryParams();
+    
+    if (name) {
+      updateCertificate(name, course);
+    } else {
+      alert("Please enter your name");
+    }
+  }
+
+  function updateCertificate(name, course) {
+    document.getElementById("username").textContent = name;
+    document.getElementById("module").textContent = course;
+    document.getElementById("badgeTitle").textContent = course + " Badge";
+    document.getElementById("date").textContent = new Date().toLocaleDateString();
+    document.getElementById("certificate").style.display = "block";
+    document.getElementById("downloadBtn").style.display = "block";
+  }
+
+  function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const element = document.getElementById('certificate');
+
+    html2canvas(element).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const imgProps = doc.getImageProperties(imgData);
+      const pdfWidth = doc.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      doc.save("certificate.pdf");
+    });
+  }
+
+  window.onload = () => {
+    const { name, course } = getQueryParams();
+     if (course) {
+      document.getElementById("module").textContent = course;
+      document.getElementById("badgeTitle").textContent = course + " Badge";
+    }
+    if (name) {
+      document.getElementById("nameInput").value = name;
+    }
+  };
+</script>

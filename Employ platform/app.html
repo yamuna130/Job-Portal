@@ -1,0 +1,1136 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <title>Skill Diagnostic Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-image: url('depositphotos_160964300-stock-photo-job-search-background.jpg');
+        }
+
+        h1 {
+            text-align: center;
+            color:#4CAF50;
+            margin-top:145px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 260px;
+            gap: 60px;
+        }
+
+        .action-button {
+            width: 250px;
+            height: 250px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            color: white;
+            border-radius: 20px;
+            background-size: cover;
+            background-position: center;
+            text-shadow: 1px 1px 3px black;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .action-button:hover {
+            transform: scale(1.19);
+        }
+
+        #startBtn {
+            background-image: url('https://static2.bigstockphoto.com/7/7/2/large1500/277783624.jpg');
+            background-color: #4CAF50;
+        }
+
+        #learnBtn {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL2_yZ3b29Hc8p4t7_Mi4FFRIsZwNSgZNMGg&s');
+            background-color: #2196F3;
+        }
+
+        #marketBtn {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjDz7OqJyrvpsoYY_ZK2D-980XftI4TzJVNxK0l-vp9ufPtQJF5i_-yLY&s');
+            background-color: #FF5722;
+        }
+    
+        .question, .summary {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .correct { color: green; }
+        .incorrect { color: red; }
+
+        #testForm, #learnSection, #marketSection {
+            display: none;
+        }
+
+        #results {
+            margin-top: 30px;
+        }
+
+        .skills-list button {
+            display: block;
+            width: 300px;
+            margin: 10px auto;
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+        }
+        .skills-list button:hover {
+            background-color:#2196F3;
+        }
+
+        #learnContent {
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .subtopics a {
+            display: block;
+            margin: 5px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .subtopics a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Added for loading state */
+        #loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* Dashboard styles */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #222;
+        }
+        ul {
+            list-style: disc;
+            padding-left: 20px;
+        }
+        ul li a {
+            text-decoration: none;
+            color: #0073e6;
+        }
+        ul li a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        .learning-methods {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .learning-method-btn {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .learning-method-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        .learning-method-btn.active {
+            background-color: #2E7D32;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .learning-resources {
+            margin-top: 20px;
+        }
+        .resource-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .resource-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .resource-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 18px;
+        }
+        .resource-description {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .resource-link {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .resource-link:hover {
+            background-color: #0b7dda;
+        }
+        .resource-type {
+            float: right;
+            color: #666;
+            font-size: 12px;
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        .no-resources {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        .skills-list .doubt-btn {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7J_9RYLgJDQeMuc1WRmihn1dDQijZ8EFBu3B_mxaFFO9eJbGnEyVvvtY&s');
+            background-color: #4a6fa5;
+            color: white;
+            margin-top: 90px;
+            margin-right: 60px;
+            width:200px;
+            height:30vh;
+        }
+        .skills-list .doubt-btn:hover {
+            background-color: #3a5a80;
+        }
+
+        #resumeBtn {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReQYrwHag9rMKgz-41GgSixxHA9CMeipjmRg&s');
+            background-color: #9C27B0;
+        }
+
+        success { color: #27ae60; }
+    small { 
+        display: block; 
+        margin-top: 5px; 
+        color: #7f8c8d; 
+        font-size: 0.8em; 
+    }
+
+    </style>
+</head>
+<body>
+    <h1 id="mainHeading">Take Test / Learn / Job Marketing / Resume Builder</h1>
+    
+    <div class="button-container">
+        <button id="startBtn" class="action-button">Take Test</button>
+        <button id="learnBtn" class="action-button">Learn</button>
+        <button id="marketBtn" class="action-button">Job Market</button>
+        <button id="resumeBtn" class="action-button">Resume Builder</button>
+    </div>
+
+    <div id="loading">Loading questions...</div>
+
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="learnSection">
+        <center>
+        <h2 style="color:blueviolet">skills</h2>
+        </center>
+        <div class="skills-list">
+            <button onclick="showLearningContent('programming')">Programming</button>
+            <button onclick="showLearningContent('web')">Web Development</button>
+            <button onclick="showLearningContent('cloud')">Cloud Computing</button>
+            <button onclick="showLearningContent('cybersecurity')">Cybersecurity</button>
+            <button onclick="showLearningContent('soft skills')">Soft Skills</button>
+            <button class="doubt-btn" onclick="openDoubtSessions()">Doubt Sessions</button>
+        </div>
+        <div id="learnContent">
+            <div id="learningMethodsContainer" style="display: none;">
+                <h3 style="text-align: center;">How would you like to learn?</h3>
+                 <div class="learning-methods">
+                    <button class="learning-method-btn active" onclick="filterResources('all')">All Resources</button>
+                    <button class="learning-method-btn" onclick="filterResources('videos')">Video Tutorials</button>
+                    <button class="learning-method-btn" onclick="filterResources('webinars')">Live Webinars</button>
+                    <button class="learning-method-btn" onclick="filterResources('websites')">Web Resources</button>
+                    <button class="learning-method-btn" onclick="filterResources('courses')">Online Courses</button>
+                </div>
+                <div id="learningResources" class="learning-resources"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="marketSection" class="dashboard">
+        <!-- In-Demand Roles -->
+        <div class="card">
+            <h2>🔥 In-Demand Roles</h2>
+            <ul>
+                <li><a href="https://www.coursera.org/learn/ai-for-everyone" target="_blank">AI Engineer (Coursera)</a></li>
+                <li><a href="https://www.udemy.com/course/network-security/" target="_blank">Cybersecurity Analyst (Udemy)</a></li>
+                <li><a href="https://www.edx.org/professional-certificate/product-management" target="_blank">Product Manager (edX)</a></li>
+                <li><a href="https://www.pluralsight.com/paths/devops" target="_blank">Cloud DevOps Engineer (Pluralsight)</a></li>
+                <li><a href="https://www.datacamp.com/courses/introduction-to-data-science" target="_blank">Data Scientist (DataCamp)</a></li>
+            </ul>
+        </div>
+
+        <!-- Trending Skills -->
+        <div class="card">
+            <h2>🚀 Trending Skills</h2>
+            <ul>
+                <li><a href="https://www.linkedin.com/learning/search?keywords=prompt%20engineering" target="_blank">Prompt Engineering (LinkedIn Learning)</a></li>
+                <li><a href="https://www.udemy.com/course/docker-kubernetes-the-practical-guide/" target="_blank">Docker & Kubernetes (Udemy)</a></li>
+                <li><a href="https://www.coursera.org/specializations/deep-learning" target="_blank">Python + AI (Coursera)</a></li>
+                <li><a href="https://www.edx.org/course/secure-cloud-computing" target="_blank">Cloud Security (edX)</a></li>
+                <li><a href="https://www.udemy.com/course/react-the-complete-guide-incl-redux/" target="_blank">React.js (Udemy)</a></li>
+            </ul>
+        </div>
+
+        <!-- Salary Benchmarks -->
+        <div class="card">
+            <h2>💰 Salary Benchmarks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Region</th>
+                        <th>Avg Salary</th>
+                        <th>Top Salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Software Engineer</td>
+                        <td>USA</td>
+                        <td>$100,000</td>
+                        <td>$160,000</td>
+                    </tr>
+                    <tr>
+                        <td>Data Analyst</td>
+                        <td>UK</td>
+                        <td>£45,000</td>
+                        <td>£75,000</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Engineer</td>
+                        <td>India</td>
+                        <td>₹15 LPA</td>
+                        <td>₹30 LPA</td>
+                    </tr>
+                    <tr>
+                        <td>UX Designer</td>
+                        <td>Canada</td>
+                        <td>CAD 70,000</td>
+                        <td>CAD 100,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Hiring Trends -->
+        <div class="card">
+            <h2>📈 Hiring Trends</h2>
+            <ul>
+                <li><a href="https://www.linkedin.com/learning/remote-working" target="_blank">Remote Jobs in Tech (LinkedIn Learning)</a></li>
+                <li><a href="https://www.coursera.org/learn/fintech" target="_blank">FinTech Demand (Coursera)</a></li>
+                <li><a href="https://www.edx.org/course/ai-for-healthcare" target="_blank">AI in Healthcare (edX)</a></li>
+                <li><a href="https://www.udemy.com/course/full-stack-web-development/" target="_blank">Full Stack Developers (Udemy)</a></li>
+                <li><a href="https://www.linkedin.com/learning/topics/cloud-computing" target="_blank">Cloud Skills Demand (LinkedIn Learning)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const heading = document.getElementById("mainHeading");
+        let startTime;
+        let currentQuestions = [];
+        const loadingElement = document.getElementById('loading');
+        let currentSkill = '';
+        let currentResources = [];
+
+         // Added calculation counter
+        let calculationCount = 0;
+    
+        function calculate() {
+        // Modified calculation logic
+        calculationCount++;
+        const startTime = performance.now();
+        const fact = getFactorial(num);
+        const endTime = performance.now();
+
+        // Enhanced result display
+        resultDiv.innerHTML = `<span class="success">${num}! = ${fact}</span><br>
+                             <small>Calculated in ${(endTime-startTime).toFixed(2)}ms | 
+                             Cache hits: ${calculationCount - Object.keys(cache).length}</small>`;
+        }
+
+          // Renamed function for clarity
+        function getFactorial(n) {
+           if (n in cache) return cache[n];
+           if (n === 0 || n === 1) return 1;
+        
+        const result = n * getFactorial(n - 1);
+        cache[n] = result;
+        return result;
+        }
+    
+
+        const jobRecommendations = {
+            "coding": ["Software Developer", "Web Developer", "Data Analyst"],
+            "finance": ["Financial Analyst", "Accountant", "Investment Banker"],
+            "soft skills": ["Customer Service Representative", "Project Manager", "HR Specialist"]
+        };
+
+        // Complete mock questions dataset that matches app.py
+        const mockQuestions = [
+            {
+                "id": 1,
+                "domain": "coding",
+                "question": "1.  What is the output of 2 + 2 * 2 in Python?",
+                "options": ["6", "8", "4", "10"],
+                "answer": "6",
+                "score": 5
+            },
+            {
+                "id": 2,
+                "domain": "soft skills",
+                "question": "2. Which of the following best describes active listening?",
+                "options": [
+                    "Listening carefully without interrupting and responding thoughtfully",
+                    "Agreeing with everything someone says",
+                    "Hearing only what you want to hear",
+                    "Responding before the speaker finishes"
+                ],
+                "answer": "Listening carefully without interrupting and responding thoughtfully",
+                "score": 5
+            },
+            {
+                "id": 3,
+                "domain": "finance",
+                "question": "3. What is an example of a fixed expense?",
+                "options": ["Electricity bill", "Rent payment", "Buying clothes", "Groceries"],
+                "answer": "Rent payment",
+                "score": 5
+            },
+            {
+                "id": 4,
+                "domain": "soft skills",
+                "question": "4. When working in a team, what is the most important soft skill?",
+                "options": [
+                    "Technical knowledge",
+                    "Communication",
+                    "Independence",
+                    "Competitiveness"],
+                "answer": "Communication",
+                "score": 5
+            },
+            {
+                "id": 5,
+                "domain": "coding",
+                "question": "5. What is the output of print(2 ** 3) in Python?",
+                "options": ["6", "8", "9", "5"],
+                "answer": "8",
+                "score": 5
+            },
+            {
+                "id": 6,
+                "domain": "finance",
+                "question": "6. What does ROI stand for in finance?",
+                "options": [
+                    "Rate of Investment",
+                    "Return on Investment",
+                    "Revenue on Income",
+                    "Return on Income"
+                ],
+                "answer": "Return on Investment",
+                "score": 5
+            },
+            {
+                "id": 7,
+                "domain": "coding",
+                "question": "7. Which of the following data structures uses LIFO (Last In First Out)?",
+                "options": ["Queue", "Stack", "Array", "Linked List"],
+                "answer": "Stack",
+                "score": 5
+            },
+            {
+                "id": 8,
+                "domain": "coding",
+                "question": "8. What does HTML stand for?",
+                "options": ["Hyper Trainer Marking Language", "Hyper Text Marketing Language", "Hyper Text Markup Language", "Hyper Text Markup Leveler"],
+                "answer": "Hyper Text Markup Language",
+                "score": 5
+            },
+            {
+                "id": 9,
+                "domain": "soft skills",
+                "question": "9. Which of these is a good way to handle workplace conflict?",
+                "options": [
+                    "Ignore it and hope it resolves itself",
+                    "Escalate it immediately to your manager",
+                    "Approach the person calmly and discuss the issue",
+                    "Post about it on social media"],
+                "answer": "Approach the person calmly and discuss the issue",
+                "score": 5
+            },
+            {
+                "id": 10,
+                "domain": "finance",
+                "question": "10. What does diversification mean in finance?",
+                "options": [
+                    "Investing all money in a single asset",
+                    "Spreading investments across various assets to reduce risk",
+                    "Selling all assets during a market crash",
+                    "Only investing in foreign markets"
+                ],
+                "answer": "Spreading investments across various assets to reduce risk",
+                "score": 5
+            },
+            {
+                "id": 11,
+                "domain": "soft skills",
+                "question": "11. What is the primary benefit of time management?",
+                "options": [
+                    "Working longer hours",
+                    "Prioritizing tasks to increase efficiency and reduce stress",
+                    "Avoiding responsibilities",
+                    "Multitasking constantly"],
+                "answer": "Prioritizing tasks to increase efficiency and reduce stress",
+                "score": 5
+            },
+            {
+                "id": 12,
+                "domain": "soft skills",
+                "question": "12. Emotional intelligence is best described as:",
+                "options": [
+                    "Knowing lots of facts",
+                    "Managing and understanding your own emotions and those of others",
+                    "Being emotionally sensitive at work",
+                    "Avoiding emotional conversations"],
+                "answer": "Managing and understanding your own emotions and those of others",
+                "score": 5
+            },
+            {
+                "id": 13,
+                "domain": "finance",
+                "question": "13. Which investment is generally considered the safest?",
+                "options": [
+                    "Stocks",
+                    "Government bonds",
+                    "Real estate",
+                    "Cryptocurrencies"
+                ],
+                "answer": "Government bonds",
+                "score": 5
+            },
+            {
+                "id": 14,
+                "domain": "coding",
+                "question": "14. Which keyword is used to define a function in Python?",
+                "options": ["func", "define", "def", "function"],
+                "answer": "def",
+                "score": 5
+            },
+            {
+                "id": 15,
+                "domain": "soft skills",
+                "question": "15. How should you respond to constructive criticism?",
+                "options": [
+                    "Argue with the feedback giver",
+                    "Ignore it completely",
+                    "Listen carefully and use it for improvement",
+                    "Complain to your coworkers"],
+                "answer": "Listen carefully and use it for improvement",
+                "score": 5
+            },
+            {
+                "id": 16,
+                "domain": "coding",
+                "question": "16. What is the time complexity of binary search algorithm?",
+                "options": ["O(n)", "O(log n)", "O(n log n)", "O(1)"],
+                "answer": "O(log n)",
+                "score": 5
+            },
+            {
+                "id": 17,
+                "domain": "finance",
+                "question": "17. What is the purpose of a Cash Flow Statement?",
+                "options": [
+                    "To show company's net income",
+                    "To summarize a company's cash inflows and outflows",
+                    "To calculate taxes owed",
+                    "To list assets and liabilities"
+                ],
+                "answer": "To summarize a company's cash inflows and outflows",
+                "score": 5
+            },
+            {
+                "id": 18,
+                "domain": "coding",
+                "question": "18. Which of the following is not a programming language?",
+                "options": ["Python", "Java", "HTML", "C++"],
+                "answer": "HTML",
+                "score": 5
+            },
+            {
+                "id": 19,
+                "domain": "soft skills",
+                "question": "19. What is the key to effective teamwork?",
+                "options": [
+                    "Individual success",
+                    "Clear communication",
+                    "Ignoring conflicts",
+                    "Working alone"
+                ],
+                "answer": "Clear communication",
+                "score": 5
+            },
+            {
+                "id": 20,
+                "domain": "finance",
+                "question": "20. Which of the following best describes budgeting?",
+                "options": [
+                    "Spending without tracking",
+                    "Planning how to allocate income towards expenses, savings, and investments",
+                    "Investing only in stocks",
+                    "Avoiding all spending"
+                ],
+                "answer": "Planning how to allocate income towards expenses, savings, and investments",
+                "score": 5
+            },
+            {
+                "id": 21,
+                "domain": "coding",
+                "question": "21. In object-oriented programming, what does 'inheritance' mean?",
+                "options": ["A class can inherit properties and methods from another class", "A function can inherit variables from another function", "A variable can inherit data types from another variable", "None of the above"],
+                "answer": "A class can inherit properties and methods from another class",
+                "score": 5
+            },
+            {
+                "id": 22,
+                "domain": "soft skills",
+                "question": "22. Which behavior shows strong emotional intelligence at work?",
+                "options": [
+                    "Ignoring others' feelings",
+                    "Managing your emotions during stress",
+                    "Always agreeing with everyone",
+                    "Being sarcastic when upset"
+                ],
+                "answer": "Managing your emotions during stress",
+                "score": 5
+            },
+            {
+                "id": 23,
+                "domain": "finance",
+                "question": "23. Which financial statement shows a company's assets, liabilities, and equity?",
+                "options": [
+                    "Profit and Loss Statement",
+                    "Cash Flow Statement",
+                    "Balance Sheet",
+                    "Income Tax Return"
+                ],
+                "answer": "Balance Sheet",
+                "score": 5
+            }
+        ];
+
+        // Maps question IDs to the full question object for easy access
+        const questionMap = {};
+        mockQuestions.forEach(q => {
+            questionMap[q.id] = q;
+        });
+        const learningResources = {
+            "programming": [
+                {
+                    title: "Python Crash Course",
+                    description: "Beginner-friendly Python tutorial series covering all basics",
+                    link: "https://www.youtube.com/watch?v=rfscVS0vtbw",
+                    type: "videos",
+                    skill: "programming"
+                },
+                {
+                    title: "Java Programming Masterclass",
+                    description: "Comprehensive Java course for beginners to experts",
+                    link: "https://www.udemy.com/course/java-the-complete-java-developer-course/",
+                    type: "courses",
+                    skill: "programming"
+                },
+                {
+                    title: "Data Structures Explained",
+                    description: "Interactive guide to data structures with examples",
+                    link: "https://www.geeksforgeeks.org/data-structures/",
+                    type: "websites",
+                    skill: "programming"
+                },
+                {
+                    title: "Live Coding Webinar",
+                    description: "Monthly live coding session with industry experts",
+                    link: "https://www.eventbrite.com/live-coding-webinar",
+                    type: "webinars",
+                    skill: "programming"
+                },
+                {
+                    title: "C++ Tutorial for Beginners",
+                    description: "Full C++ programming course with practical exercises",
+                    link: "https://www.learncpp.com/",
+                    type: "websites",
+                    skill: "programming"
+                }
+            ],
+            "web": [
+                {
+                    title: "HTML & CSS Full Course",
+                    description: "Complete web development basics from scratch",
+                    link: "https://www.youtube.com/watch?v=qz0aGYrrlhU",
+                    type: "videos",
+                    skill: "web"
+                },
+                {
+                    title: "JavaScript: The Advanced Concepts",
+                    description: "Advanced JS concepts explained with real-world examples",
+                    link: "https://www.udemy.com/course/advanced-javascript-concepts/",
+                    type: "courses",
+                    skill: "web"
+                },
+                {
+                    title: "React Documentation",
+                    description: "Official React.js documentation and tutorials",
+                    link: "https://reactjs.org/docs/getting-started.html",
+                    type: "websites",
+                    skill: "web"
+                },
+                {
+                    title: "Web Development Trends 2023",
+                    description: "Live discussion on latest web trends and technologies",
+                    link: "https://www.eventbrite.com/web-dev-trends",
+                    type: "webinars",
+                    skill: "web"
+                }
+            ],
+            "cloud": [
+                {
+                    title: "AWS Fundamentals",
+                    description: "Introduction to Amazon Web Services core concepts",
+                    link: "https://www.youtube.com/watch?v=ulprqHHWlng",
+                    type: "videos",
+                    skill: "cloud"
+                },
+                {
+                    title: "Google Cloud Certification",
+                    description: "Prepare for Google Cloud certification exams",
+                    link: "https://www.coursera.org/google-cloud-certifications",
+                    type: "courses",
+                    skill: "cloud"
+                },
+                {
+                    title: "Azure Documentation",
+                    description: "Microsoft Azure official documentation portal",
+                    link: "https://docs.microsoft.com/en-us/azure/",
+                    type: "websites",
+                    skill: "cloud"
+                },
+                {
+                    title: "Cloud Security Best Practices",
+                    description: "Monthly webinar on cloud security strategies",
+                    link: "https://www.eventbrite.com/cloud-security",
+                    type: "webinars",
+                    skill: "cloud"
+                }
+            ],
+            "cybersecurity": [
+                {
+                    title: "Ethical Hacking Course",
+                    description: "Learn ethical hacking from scratch with hands-on labs",
+                    link: "https://www.youtube.com/watch?v=3Kq1MIfTWCE",
+                    type: "videos",
+                    skill: "cybersecurity"
+                },
+                {
+                    title: "Cybersecurity Fundamentals",
+                    description: "Beginner to advanced cybersecurity concepts",
+                    link: "https://www.udemy.com/course/cybersecurity-fundamentals/",
+                    type: "courses",
+                    skill: "cybersecurity"
+                },
+                {
+                    title: "OWASP Security Guide",
+                    description: "Web application security resources and best practices",
+                    link: "https://owasp.org/www-project-top-ten/",
+                    type: "websites",
+                    skill: "cybersecurity"
+                },
+                {
+                    title: "Latest Cyber Threats",
+                    description: "Live discussion on current cyber threats and defenses",
+                    link: "https://www.eventbrite.com/cyber-threats",
+                    type: "webinars",
+                    skill: "cybersecurity"
+                }
+            ],
+            "soft skills": [
+                {
+                    title: "Effective Communication",
+                    description: "Improve your communication skills in professional settings",
+                    link: "https://www.youtube.com/watch?v=7vGq7BQJv6U",
+                    type: "videos",
+                    skill: "soft skills"
+                },
+                {
+                    title: "Leadership Masterclass",
+                    description: "Develop leadership skills for team management",
+                    link: "https://www.coursera.org/leadership-masterclass",
+                    type: "courses",
+                    skill: "soft skills"
+                },
+                {
+                    title: "MindTools Resources",
+                    description: "Comprehensive soft skills resources and guides",
+                    link: "https://www.mindtools.com/",
+                    type: "websites",
+                    skill: "soft skills"
+                },
+                 {
+                    title: "Remote Team Management",
+                    description: "Webinar on managing remote teams effectively",
+                    link: "https://www.eventbrite.com/remote-teams",
+                    type: "webinars",
+                    skill: "soft skills"
+                },
+                 {
+                    title: "Time Management Techniques",
+                    description: "Online course on productivity and time management",
+                    link: "https://www.udemy.com/course/time-management-productivity/",
+                    type: "courses",
+                    skill: "soft skills"
+                }
+            ]
+        };
+
+        async function fetchQuestions() {
+            loadingElement.style.display = 'block';
+            console.log("Fetching questions...");
+            
+            try {
+                const response = await fetch('/questions');
+                
+                // Check if the response is successful
+                if (response.ok) {
+                    const questions = await response.json();
+                    currentQuestions = questions;
+                    questions.forEach(q => questionMap[q.id] = q);
+                    displayQuestions(questions);
+                    
+                } else {
+                    currentQuestions = mockQuestions;
+                    displayQuestions(mockQuestions);
+                }
+            } catch (err) {
+                currentQuestions = mockQuestions;
+                displayQuestions(mockQuestions);
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+        
+        function displayQuestions(questions) {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            questions.forEach(q => {
+                const div = document.createElement('div');
+                div.className = "question";
+                div.innerHTML = `<p><b>${q.question}</b> <i>(${q.domain})</i></p>` +
+                    q.options.map(opt => `
+                        <label>
+                            <input type="radio" name="q${q.id}" value="${opt}"> ${opt}
+                        </label><br>`).join('');
+                container.appendChild(div);
+            });
+            document.getElementById('testForm').style.display = 'block';
+        }
+
+         function openDoubtSessions() {
+            window.open('doubts.html', '_blank');
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            heading.textContent = "Skill Diagnostic Test";
+            document.querySelector('.button-container').style.display = 'none';
+            document.getElementById('learnSection').style.display = 'none';
+            document.getElementById('marketSection').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            fetchQuestions();
+            startTime = Date.now();
+        });
+
+        document.getElementById('learnBtn').addEventListener('click', () => {
+            heading.textContent = "Learn";
+            document.querySelector('.button-container').style.display = 'none';
+            document.getElementById('testForm').style.display = 'none';
+            document.getElementById('marketSection').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('learnSection').style.display = 'block';
+        });
+
+        document.getElementById('marketBtn').addEventListener('click', () => {
+            heading.textContent = "Job Market Insights";
+            document.querySelector('.button-container').style.display = 'none';
+            document.getElementById('testForm').style.display = 'none';
+            document.getElementById('learnSection').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('marketSection').style.display = 'grid';
+        });
+
+
+
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+
+            const formData = new FormData(e.target);
+            const answers = {};
+            for (const [key, value] of formData.entries()) {
+                answers[key.replace('q', '')] = value;
+            }
+
+            const unanswered = currentQuestions.filter(q => !answers.hasOwnProperty(q.id.toString()));
+            if (unanswered.length > 0) {
+               alert("Please answer all questions before submitting!");
+               return;
+            }
+
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ answers, timeTaken })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    displayResults(result);
+                } else {
+                    const mockResult = calculateResults(answers, timeTaken);
+                    displayResults(mockResult);
+                }
+            } catch (error) {
+                const mockResult = calculateResults(answers, timeTaken);
+                displayResults(mockResult);
+            }
+        });
+        
+        // Calculate results when the server is unavailable
+        function calculateResults(answers, timeTaken) {
+            const domainScores = {};
+            const detailedReview = [];
+            currentQuestions.forEach(q => {
+                const domain = q.domain;
+                const qId = q.id.toString();
+                if (!domainScores[domain]) {
+                    domainScores[domain] = { correct: 0, total: 0, score: 0 };
+                }
+                
+                domainScores[domain].total += 1;
+                const userAnswer = answers[qId];
+                const isCorrect = userAnswer === q.answer;
+                if (isCorrect) {
+                    domainScores[domain].correct += 1;
+                    domainScores[domain].score += q.score || 5; // Default to 5 if score is not defined
+                }
+                detailedReview.push({
+                    id: q.id,
+                    question: q.question,
+                    domain: q.domain,
+                    user_answer: userAnswer,
+                    correct_answer: q.answer,
+                    is_correct: isCorrect,
+                    score: q.score || 5
+                });
+            });
+            Object.keys(domainScores).forEach(domain => {
+                const d = domainScores[domain];
+                d.percentage = d.total > 0 ? Math.round((d.correct / d.total) * 100 * 100) / 100 : 0;
+            });
+            
+            return {
+                skills: domainScores,
+                timeTaken: timeTaken,
+                review: detailedReview
+            };
+        }
+        
+        function displayResults(result) {
+            const resultDiv = document.getElementById('results');
+            const totalScore = result.review.reduce((sum, r) => sum + (r.is_correct ? r.score : 0), 0);
+            const maxPossibleScore = result.review.reduce((sum, r) => sum + r.score, 0);
+
+            const sortedSkills = Object.entries(result.skills).sort((a, b) => b[1].percentage - a[1].percentage);
+            const topDomains = sortedSkills.filter(([_, val]) => val.percentage >= 60).map(([domain]) => domain);
+
+            let suggestedJobs = new Set();
+            topDomains.forEach(domain => {
+                const jobs = jobRecommendations[domain];
+                if (jobs) jobs.forEach(job => suggestedJobs.add(job));
+            });
+
+            resultDiv.innerHTML = `
+                <div class="summary">
+                    <h2>Test Summary</h2>
+                    <p><b>Total Score:</b> ${totalScore} / ${maxPossibleScore}</p>
+                    <p><b>Time Taken:</b> ${result.timeTaken} seconds</p>
+                </div>
+                <h3>Skill Breakdown:</h3>
+                ${sortedSkills.map(([k, v]) =>
+                    `<p><b>${k.toUpperCase()}</b>: ${v.percentage}% (${v.correct}/${v.total}, ${v.score} pts)</p>`
+                ).join('')}
+                 ${suggestedJobs.size > 0 ? `
+                    <h3>Recommended Jobs Based on Your Strengths:</h3>
+                    <ul>${[...suggestedJobs].map(job => `<li>${job}</li>`).join('')}</ul>
+                ` : `
+                    <h3>No Strong Skills Detected Yet</h3>
+                    <p>Here are some helpful resources to get you started on different skill areas:</p>
+                <ul>
+                    <li><a href="https://www.w3schools.com/python/" target="_blank">Learn Python Programming</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/HTML" target="_blank">Web Development with HTML</a></li>
+                    <li><a href="https://aws.amazon.com/training/" target="_blank">AWS Cloud Training</a></li>
+                    <li><a href="https://www.cybrary.it/" target="_blank">Intro to Cybersecurity</a></li>
+                    <li><a href="https://www.coursera.org/learn/soft-skills" target="_blank">Soft Skills on Coursera</a></li>
+                </ul>
+                <p>You can also explore the Learn section above to dive deeper.</p>
+                `} 
+                <h3>Answer Review:</h3>
+                ${result.review.map(r => `
+                    <div class="question">
+                        <p><b>${r.question}</b></p>
+                        <p>Your Answer: <span class="${r.is_correct ? 'correct' : 'incorrect'}">${r.user_answer || "None"}</span></p>
+                        ${!r.is_correct ? `<p>Correct Answer: <b>${r.correct_answer}</b></p>` : ''}
+                        <p>Score: ${r.is_correct ? r.score : 0}/${r.score}</p>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function showLearningContent(skill) {
+             currentSkill = skill;
+            document.getElementById('learningMethodsContainer').style.display = 'block';
+            
+            // Reset all buttons to default state
+            document.querySelectorAll('.learning-method-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Set 'All' as active by default
+            document.querySelector('.learning-method-btn[onclick="filterResources(\'all\')"]').classList.add('active');
+            
+            // Get resources for the selected skill
+            currentResources = learningResources[skill.toLowerCase()] || [];
+            // Display all resources initially
+            filterResources('all');
+        }
+
+        function filterResources(type) {
+            // Update active button
+            document.querySelectorAll('.learning-method-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter resources
+            const filteredResources = type === 'all' 
+                ? currentResources 
+                : currentResources.filter(res => res.type === type);
+
+                // Display resources
+            const resourcesContainer = document.getElementById('learningResources');
+            if (filteredResources.length === 0) {
+                resourcesContainer.innerHTML = `
+                    <div class="no-resources">
+                        <p>No ${type === 'all' ? '' : type} resources available for ${currentSkill}.</p>
+                        <p>Check back later or try another learning method.</p>
+                    </div>
+                `;
+                } else {
+                resourcesContainer.innerHTML = filteredResources.map(res => `
+                  <div class="resource-item">
+                    <div class="resource-item">
+                        <div class="resource-title">${res.title}</div>
+                        <div class="resource-description">${res.description}</div>
+                        <div style="margin-top: 10px;">
+                            <a href="${res.link}" class="resource-link" target="_blank">Access Resource</a>
+                            <a href="certificate.html?name=User&course=${encodeURIComponent(res.title)}" class="resource-link" target="_blank" style="background-color: green; margin-left: 10px;">Generate Certificate</a>
+                            <span class="resource-type">${res.type}</span>
+                             </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        document.getElementById('resumeBtn').addEventListener('click', () => {
+            window.open('resume.html', '_blank');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           

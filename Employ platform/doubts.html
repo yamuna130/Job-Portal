@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doubt Solver</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border: 1px solid #ddd;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            background-color: #4a6fa5;
+            color: white;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid #3a5a80;
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: #4a6fa5;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+            background-color: #f0f0f0;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .typing-indicator {
+            align-self: flex-start;
+            display: inline-flex;
+            padding: 12px 16px;
+            background-color: #f0f0f0;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: #666;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .category-btn {
+            padding: 8px 12px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .category-btn:hover {
+            background-color:#666;
+        }
+        
+        .category-btn.selected {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background-color: white;
+        }
+        
+        #messageInput {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        #sendButton {
+            margin-left: 10px;
+            padding: 0 20px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        
+        #sendButton:hover {
+            background-color: #3a5a80;
+        }
+        
+        #sendButton:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .category-selection {
+            display: none;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background-color: white;
+            flex-direction: column;
+        }
+        
+        .category-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .timestamp {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .ai-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4a6fa5;
+        }
+        
+        .back-button {
+            background: none;
+            border: none;
+            color: #4a6fa5;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Doubt Clarification Session 
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will appear here -->
+        </div>
+        
+        <div class="category-selection" id="categorySelection">
+            <div class="category-title">Select a category for your doubt:</div>
+            <div class="category-buttons">
+                <button class="category-btn" data-category="programming">Programming</button>
+                <button class="category-btn" data-category="math">Mathematics</button>
+                <button class="category-btn" data-category="engineering">Engineering</button>
+                <button class="category-btn" data-category="ai">Artificial Intelligence</button>
+                <button class="category-btn" data-category="science">Science</button>
+                <button class="category-btn" data-category="business">Business</button>
+                <button class="category-btn" data-category="other">Other</button>
+            </div>
+        </div>
+        
+        <div class="input-area" id="inputArea">
+            <input type="text" id="messageInput" placeholder="Type your doubt here..." autocomplete="off">
+            <button id="sendButton" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const inputArea = document.getElementById('inputArea');
+            const categorySelection = document.getElementById('categorySelection');
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            
+            let currentCategory = null;
+            let waitingForCategory = true;
+            
+            // Show category selection initially
+            inputArea.style.display = 'none';
+            categorySelection.style.display = 'flex';
+            
+            // Enable send button when there's text
+            messageInput.addEventListener('input', () => {
+                sendButton.disabled = messageInput.value.trim() === '';
+            });
+            
+            // Send message on button click or Enter key
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !sendButton.disabled) {
+                    sendMessage();
+                }
+            });
+            
+            // Category selection
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    currentCategory = button.dataset.category;
+                    
+                    // Update UI
+                    categoryButtons.forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    
+                    // Show input area
+                    setTimeout(() => {
+                        categorySelection.style.display = 'none';
+                        inputArea.style.display = 'flex';
+                        messageInput.focus();
+                        waitingForCategory = false;
+                        
+                        // Add confirmation message
+                        addMessage(`You selected ${button.textContent} category. Please ask your doubt.`, 'ai');
+                    }, 300);
+                });
+            });
+            
+            // Knowledge bases for different categories
+            const knowledgeBases = {
+                programming: {
+                    "javascript": "JavaScript is a programming language used for web development. It runs in the browser and can manipulate HTML and CSS.",
+                    "html": "HTML is the markup language that structures web content. It defines elements like headings, paragraphs, and links.",
+                    "css": "CSS styles HTML elements. It controls layout, colors, fonts, and responsive design.",
+                    "function": "Functions are reusable code blocks that perform specific tasks when called.",
+                    "loop": "Loops repeat actions. Common types are 'for', 'while', and 'forEach' loops."
+                },
+                math: {
+                    "algebra": "Algebra deals with symbols and rules for manipulating those symbols to solve equations.",
+                    "calculus": "Calculus studies continuous change through differentiation and integration.",
+                    "geometry": "Geometry studies shapes, sizes, and properties of space.",
+                    "trigonometry": "Trigonometry deals with triangles and trigonometric functions like sine and cosine."
+                },
+                engineering: {
+                    "mechanical": "Mechanical engineering involves design, analysis, and manufacturing of mechanical systems.",
+                    "electrical": "Electrical engineering deals with electricity, electronics, and electromagnetism.",
+                    "civil": "Civil engineering focuses on infrastructure design and construction.",
+                    "software": "Software engineering applies engineering principles to software development."
+                },
+                ai: {
+                    "machine learning": "Machine learning is a subset of AI where systems learn from data without explicit programming.",
+                    "neural networks": "Neural networks are computing systems inspired by biological neural networks.",
+                    "nlp": "Natural Language Processing enables computers to understand human language.",
+                    "computer vision": "Computer vision enables computers to interpret visual information."
+                },
+                science: {
+                    "physics": "Physics studies matter, energy, and their interactions.",
+                    "chemistry": "Chemistry studies substances and their transformations.",
+                    "biology": "Biology studies living organisms and their vital processes."
+                },
+                business: {
+                    "marketing": "Marketing involves promoting and selling products or services.",
+                    "finance": "Finance deals with money management and investment.",
+                    "management": "Management involves organizing and coordinating business activities."
+                },
+                other: {
+                    "general": "I can help with general knowledge questions across various topics."
+                }
+            };
+            
+            // Predefined responses by category
+            const aiResponses = {
+                programming: [
+                    "In programming, the solution to '{topic}' typically involves...",
+                    "That's a common programming question! The answer is...",
+                    "For '{topic}' in programming, you would usually..."
+                ],
+                math: [
+                    "The mathematical concept of '{topic}' can be explained as...",
+                    "In mathematics, '{topic}' is handled by...",
+                    "For your math question about '{topic}', the solution is..."
+                ],
+                engineering: [
+                    "In engineering, '{topic}' is approached by...",
+                    "The engineering solution for '{topic}' involves...",
+                    "For '{topic}' in engineering, standard practice is..."
+                ],
+                ai: [
+                    "In AI, '{topic}' refers to...",
+                    "The AI approach to '{topic}' would be...",
+                    "For your AI question about '{topic}', current methods include..."
+                ],
+                science: [
+                    "The scientific principle behind '{topic}' is...",
+                    "In science, '{topic}' is understood as...",
+                    "For your science question, '{topic}' can be explained by..."
+                ],
+                business: [
+                    "In business, '{topic}' is typically managed by...",
+                    "The business perspective on '{topic}' suggests...",
+                    "For '{topic}' in business, common practices include..."
+                ],
+                other: [
+                    "Regarding '{topic}', I can tell you that...",
+                    "For your question about '{topic}', the information I have is...",
+                    "About '{topic}', here's what I know..."
+                ]
+            };
+            
+            function sendMessage() {
+                const messageText = messageInput.value.trim();
+                if (!messageText) return;
+                
+                // Add user message to chat
+                addMessage(messageText, 'user');
+                messageInput.value = '';
+                sendButton.disabled = true;
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Simulate AI thinking (1-3 seconds)
+                setTimeout(() => {
+                    // Remove typing indicator
+                    removeTypingIndicator();
+                    
+                    // Generate AI response
+                    const aiResponse = generateAIResponse(messageText, currentCategory);
+                    addMessage(aiResponse, 'ai');
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Show category selection again for next question
+                    setTimeout(() => {
+                        resetForNewQuestion();
+                    }, 1000);
+                }, Math.random() * 2000 + 1000);
+            }
+            
+            function resetForNewQuestion() {
+                currentCategory = null;
+                waitingForCategory = true;
+                inputArea.style.display = 'none';
+                categorySelection.style.display = 'flex';
+                categoryButtons.forEach(btn => btn.classList.remove('selected'));
+                
+                // Add prompt for next question
+                addMessage("Please select a category for your next question.", 'ai');
+            }
+            
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}-message`;
+                
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                if (sender === 'ai') {
+                    messageDiv.innerHTML = `
+                        <div class="ai-title">EXPORTS</div>
+                        ${text}
+                        <div class="timestamp">${timeString}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        ${text}
+                        <div class="timestamp">${timeString}</div>
+                    `;
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+            
+            function generateAIResponse(userMessage, category) {
+                // Extract potential topic (first few words)
+                const words = userMessage.toLowerCase().split(/\s+/);
+                let topic = '';
+                
+                // Find if any word matches our knowledge base
+                const kb = knowledgeBases[category] || knowledgeBases.other;
+                for (const word of words) {
+                    if (kb[word]) {
+                        topic = word;
+                        break;
+                    }
+                }
+                
+                // If we found a topic, use the knowledge base
+                if (topic) {
+                    return kb[topic];
+                }
+                
+                // Otherwise, generate a category-specific response
+                const responses = aiResponses[category] || aiResponses.other;
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const extractedTopic = words.length > 0 ? words[0] : 'this topic';
+                return randomResponse.replace('{topic}', extractedTopic);
+            }
+            
+            // Add welcome message
+            setTimeout(() => {
+                addMessage("Hello! I'm Mentor. First, please select a category for your question.", 'ai');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
